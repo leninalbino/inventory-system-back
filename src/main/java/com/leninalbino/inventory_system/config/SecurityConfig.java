@@ -13,6 +13,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/employee/**").hasAnyRole("ADMIN", "EMPLOYEE")
                         .anyRequest().authenticated()
                 );
         return http.build();

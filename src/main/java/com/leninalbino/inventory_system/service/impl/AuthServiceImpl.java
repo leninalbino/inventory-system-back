@@ -1,5 +1,6 @@
 package com.leninalbino.inventory_system.service.impl;
 
+import com.leninalbino.inventory_system.model.dto.RegisterRequestDto;
 import com.leninalbino.inventory_system.model.entity.User;
 import com.leninalbino.inventory_system.repository.AuthRepository;
 import com.leninalbino.inventory_system.service.AuthService;
@@ -35,5 +36,18 @@ public class AuthServiceImpl implements AuthService {
                 .setSubject(user.getDocument())
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    @Override
+    public void registerUser(RegisterRequestDto dto) {
+        if (repository.findByDocumentAndPassword(dto.getDocument(), dto.getPassword()) != null) {
+            throw new RuntimeException("Usuario ya existe");
+        }
+        User user = new User();
+        user.setDocument(dto.getDocument());
+        user.setPassword(dto.getPassword()); // Reemplaza por encoder si usas hash
+        user.setUsername(dto.getUsername());
+        user.setRoles(dto.getRoles());
+        repository.save(user);
     }
 }

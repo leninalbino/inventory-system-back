@@ -2,6 +2,7 @@ package com.leninalbino.inventory_system.controller;
 
 import com.leninalbino.inventory_system.model.dto.ApiResponse;
 import com.leninalbino.inventory_system.model.dto.LoginResponseDto;
+import com.leninalbino.inventory_system.model.dto.RegisterRequestDto;
 import com.leninalbino.inventory_system.model.dto.UserRequestDto;
 import com.leninalbino.inventory_system.service.AuthService;
 import jakarta.validation.Valid;
@@ -31,5 +32,11 @@ public class AuthController {
         // Aquí podemos agregar más información al response si es necesario, como el usuario o roles
         ApiResponse<LoginResponseDto> apiResponse = new ApiResponse<>(true, "Login successful", response);
         return ResponseEntity.ok(apiResponse);
+    }
+
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<String>> register(@RequestBody @Valid RegisterRequestDto dto) {
+        authService.registerUser(dto);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Usuario registrado exitosamente", null));
     }
 }
