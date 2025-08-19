@@ -1,0 +1,41 @@
+/mvnw text eol=lf
+*.cmd text eol=crlf
+# Java / Maven / Gradle
+target/
+build/
+out/
+*.class
+*.jar
+*.war
+*.ear
+
+# Dependencias
+/.mvn/
+!/.mvn/wrapper/maven-wrapper.jar
+.gradle/
+*.log
+
+# Configuración de IDEs
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.project
+.classpath
+.settings/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Archivos temporales
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Docker
+*.pid
+docker-compose.override.yml
+.env
