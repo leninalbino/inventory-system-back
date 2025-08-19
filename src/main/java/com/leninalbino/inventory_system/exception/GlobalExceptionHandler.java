@@ -15,5 +15,5 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    // Puedes agregar más handlers para otras excepciones
+    // Puedemos agregar más handlers para otras excepciones
 }
