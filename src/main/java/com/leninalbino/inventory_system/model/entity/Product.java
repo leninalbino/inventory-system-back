@@ -1,9 +1,11 @@
 package com.leninalbino.inventory_system.model.entity;
 
 import jakarta.persistence.*;
+import lombok.Data;
 
 @Entity
 @Table(name = "Products")
+@Data
 public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -12,5 +14,8 @@ public class Product {
     private String description;
     private Double price;
     private Integer quantity;
-    //private Set(Category) category;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 }

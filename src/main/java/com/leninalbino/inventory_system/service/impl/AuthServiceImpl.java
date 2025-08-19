@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.security.Key;
+import java.util.Date;
 
 @Service
 public class AuthServiceImpl implements AuthService {
@@ -31,9 +32,15 @@ public class AuthServiceImpl implements AuthService {
         }
 
         Key key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        long nowMillis = System.currentTimeMillis();
+        long expMillis = nowMillis + 3600000; // 1 hora
 
         return Jwts.builder()
                 .setSubject(user.getDocument())
+                .claim("username", user.getUsername())
+                .claim("roles", user.getRoles())
+                .setIssuedAt(new Date(nowMillis))
+                .setExpiration(new Date(expMillis))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -49,5 +56,14 @@ public class AuthServiceImpl implements AuthService {
         user.setUsername(dto.getUsername());
         user.setRoles(dto.getRoles());
         repository.save(user);
+    }
+
+    @Override
+    public User getUser(String document, String password) {
+        User user = repository.findByDocumentAndPassword(document, password);
+        if (user == null) {
+            throw new RuntimeException("Credenciales inválidas");
+        }
+        return user;
     }
 }
