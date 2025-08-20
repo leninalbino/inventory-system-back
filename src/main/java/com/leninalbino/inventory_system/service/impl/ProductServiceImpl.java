@@ -7,6 +7,7 @@ import com.leninalbino.inventory_system.repository.CategoryRepository;
 import com.leninalbino.inventory_system.repository.ProductRepository;
 import com.leninalbino.inventory_system.service.NotificationService;
 import com.leninalbino.inventory_system.service.ProductService;
+import com.leninalbino.inventory_system.service.WebSocketService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,13 +19,15 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final NotificationService notificationService;
+    private final WebSocketService webSocketService;
 
     public ProductServiceImpl(ProductRepository productRepository,
                               CategoryRepository categoryRepository,
-                              NotificationService notificationService) {
+                              NotificationService notificationService, WebSocketService webSocketService) {
         this.productRepository = productRepository;
         this.categoryRepository = categoryRepository;
         this.notificationService = notificationService;
+        this.webSocketService = webSocketService;
     }
 
     @Override
@@ -42,8 +45,9 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         Product saved = productRepository.save(product);
 
-        if (saved.getQuantity() != null && saved.getQuantity() < 5) {
+        if (saved.getQuantity() < 5) {
             notificationService.notifyLowInventory(saved.getProductName(), saved.getQuantity());
+            webSocketService.notificarInventarioBajo(saved);
         }
 
         return toDto(saved);
@@ -67,8 +71,9 @@ public class ProductServiceImpl implements ProductService {
         }
         Product updated = productRepository.save(product);
 
-        if (updated.getQuantity() != null && updated.getQuantity() < 5) {
+        if (updated.getQuantity() < 5) {
             notificationService.notifyLowInventory(updated.getProductName(), updated.getQuantity());
+            webSocketService.notificarInventarioBajo(updated);
         }
 
         return toDto(updated);

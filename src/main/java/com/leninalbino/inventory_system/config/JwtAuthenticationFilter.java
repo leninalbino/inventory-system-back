@@ -53,8 +53,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
-                // Token inválido, no autenticamos
-                SecurityContextHolder.clearContext();
+                /// Si el token es inválido, responde con 401 y no continúa
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
+                return;
             }
         }
         filterChain.doFilter(request, response);

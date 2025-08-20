@@ -22,6 +22,11 @@ public class SecurityConfig {
                         .requestMatchers("/report/low-inventory").hasRole("ADMIN")
                         .requestMatchers("/products", "/products/", "/products/{id}", "/products/low-inventory").hasAnyRole("ADMIN", "EMPLOYEE")
                         .requestMatchers("/products/**").hasRole("ADMIN") // Para POST, PUT, DELETE
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 ).addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
