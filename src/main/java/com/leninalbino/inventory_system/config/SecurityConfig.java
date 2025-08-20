@@ -19,7 +19,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login", "/auth/register").permitAll()
-                        .requestMatchers("/products/low-inventory/report").hasRole("ADMIN")
+                        .requestMatchers("/report/low-inventory").hasRole("ADMIN")
                         .requestMatchers("/products", "/products/", "/products/{id}", "/products/low-inventory").hasAnyRole("ADMIN", "EMPLOYEE")
                         .requestMatchers("/products/**").hasRole("ADMIN") // Para POST, PUT, DELETE
                         .anyRequest().authenticated()
