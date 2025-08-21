@@ -1,6 +1,7 @@
 package com.leninalbino.inventory_system.controller;
 
 import com.leninalbino.inventory_system.model.dto.ApiResponse;
+import com.leninalbino.inventory_system.model.dto.ProductCreateRequestDto;
 import com.leninalbino.inventory_system.model.dto.ProductDto;
 import com.leninalbino.inventory_system.service.ProductService;
 import jakarta.validation.Valid;
@@ -34,8 +35,21 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductDto>> create(@RequestBody @Valid ProductDto productDto) {
+    public ResponseEntity<ApiResponse<ProductDto>> create(@RequestBody @Valid ProductCreateRequestDto requestDto) {
         try {
+            // Conversión segura de String a Double
+            Double price;
+            try {
+                price = Double.parseDouble(requestDto.getPrice());
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "El precio debe ser un número válido.", null));
+            }
+            ProductDto productDto = new ProductDto();
+            productDto.setProductName(requestDto.getProductName());
+            productDto.setDescription(requestDto.getDescription());
+            productDto.setPrice(price);
+            productDto.setQuantity(requestDto.getQuantity());
+            productDto.setCategoryId(requestDto.getCategoryId());
             ProductDto saved = productService.createProduct(productDto);
             return ResponseEntity.ok(new ApiResponse<>(true, "Producto creado exitosamente", saved));
         } catch (RuntimeException e) {

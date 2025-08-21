@@ -3,6 +3,7 @@ package com.leninalbino.inventory_system.service.impl;
 import com.leninalbino.inventory_system.model.entity.Product;
 import com.leninalbino.inventory_system.repository.ProductRepository;
 import com.leninalbino.inventory_system.service.ReportService;
+import com.leninalbino.inventory_system.utils.PdfFooterPageEvent;
 import com.lowagie.text.*;
 import com.lowagie.text.pdf.PdfWriter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,8 @@ public class ReportServiceImpl implements ReportService {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
-            PdfWriter.getInstance(document, out);
+            PdfWriter writer = PdfWriter.getInstance(document, out);
+            writer.setPageEvent(new PdfFooterPageEvent());
             document.open();
 
             document.add(new Paragraph("Reporte de Productos con Inventario Bajo"));
