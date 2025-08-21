@@ -7,13 +7,15 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class NotificationServiceImpl implements NotificationService {
     private final JavaMailSender mailSender;
     private final SimpMessagingTemplate messagingTemplate;
 
-    @Value("${admin.email}")
-    private String adminEmail;
+    //@Value("${admin.email}")
+    //private String adminEmail;
 
     public NotificationServiceImpl(JavaMailSender mailSender, SimpMessagingTemplate messagingTemplate) {
         this.mailSender = mailSender;
@@ -21,13 +23,15 @@ public class NotificationServiceImpl implements NotificationService {
     }
 
     @Override
-    public void notifyLowInventory(String productName, Integer quantity) {
-        // Notificación por correo
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(adminEmail);
-        message.setSubject("Inventario bajo: " + productName);
-        message.setText("El producto '" + productName + "' tiene solo " + quantity + " unidades en inventario.");
-        mailSender.send(message);
+    public void notifyLowInventory(String productName, Integer quantity, List<String> emails) {
+        // Notificación por correo a todos los admins
+        if (emails != null && !emails.isEmpty()) {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo(emails.toArray(new String[0]));
+            message.setSubject("Inventario bajo: " + productName);
+            message.setText("El producto '" + productName + "' tiene solo " + quantity + " unidades en inventario.");
+            mailSender.send(message);
+        }
 
         // Notificación por WebSocket
         messagingTemplate.convertAndSend("/topic/low-inventory",

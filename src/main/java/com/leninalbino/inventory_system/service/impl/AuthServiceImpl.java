@@ -39,6 +39,7 @@ public class AuthServiceImpl implements AuthService {
                 .setSubject(user.getDocument())
                 .claim("username", user.getUsername())
                 .claim("roles", user.getRoles())
+                .claim("email", user.getEmail())
                 .setIssuedAt(new Date(nowMillis))
                 .setExpiration(new Date(expMillis))
                 .signWith(key, SignatureAlgorithm.HS256)
@@ -54,6 +55,7 @@ public class AuthServiceImpl implements AuthService {
         user.setDocument(dto.getDocument());
         user.setPassword(dto.getPassword()); // Reemplaza por encoder si usas hash
         user.setUsername(dto.getUsername());
+        user.setEmail(dto.getEmail());
         user.setRoles(dto.getRoles());
         repository.save(user);
     }

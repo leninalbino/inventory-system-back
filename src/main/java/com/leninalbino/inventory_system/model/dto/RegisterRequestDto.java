@@ -9,5 +9,6 @@ public class RegisterRequestDto {
     private String document;
     private String password;
     private String username;
+    private String email;
     private Set<String> roles; // Ejemplo: ["ADMIN", "EMPLOYEE"]
 }

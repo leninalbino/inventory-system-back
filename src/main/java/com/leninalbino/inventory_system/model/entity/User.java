@@ -15,6 +15,7 @@ public class User {
     private String username;
     private String password;
     private String document;
+    private String email;
     private String typeDocument;
 
     @ElementCollection(fetch = FetchType.EAGER)

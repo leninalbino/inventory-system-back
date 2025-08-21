@@ -7,6 +7,8 @@ import com.leninalbino.inventory_system.repository.CategoryRepository;
 import com.leninalbino.inventory_system.repository.ProductRepository;
 import com.leninalbino.inventory_system.repository.AuthRepository;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -18,11 +20,13 @@ public class DataInitializer implements CommandLineRunner {
     private final AuthRepository authRepository;
     private final CategoryRepository categoryRepository;
     private final ProductRepository productRepository;
+    private final JavaMailSenderImpl mailSender;
 
-    public DataInitializer(AuthRepository authRepository, CategoryRepository categoryRepository, ProductRepository productRepository) {
+    public DataInitializer(AuthRepository authRepository, CategoryRepository categoryRepository, ProductRepository productRepository, JavaMailSenderImpl mailSender) {
         this.authRepository = authRepository;
         this.categoryRepository = categoryRepository;
         this.productRepository = productRepository;
+        this.mailSender = mailSender;
     }
 
     @Override
@@ -32,6 +36,7 @@ public class DataInitializer implements CommandLineRunner {
             User admin = new User();
             admin.setUsername("admin");
             admin.setDocument("admin");
+            admin.setEmail("leninalbino@gmail.com");
             admin.setPassword("admin"); // Cambia por hash en producción
             admin.setRoles(Collections.singleton("ROLE_ADMIN"));
             authRepository.save(admin);
@@ -39,6 +44,7 @@ public class DataInitializer implements CommandLineRunner {
             User empleado = new User();
             empleado.setUsername("empleado");
             empleado.setDocument("empleado");
+            empleado.setEmail("employee@gmail.com");
             empleado.setPassword("empleado");
             empleado.setRoles(Collections.singleton("ROLE_EMPLOYEE"));
             authRepository.save(empleado);
@@ -73,5 +79,16 @@ public class DataInitializer implements CommandLineRunner {
             prod2.setCategory(cat2);
             productRepository.save(prod2);
         }
+
+        /*try {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setTo("innovasoftperu.dev@gmail.com");
+            message.setSubject("Prueba de autenticación SMTP");
+            message.setText("Esto es una prueba.");
+            mailSender.send(message);
+            System.out.println("Correo enviado correctamente");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }*/
     }
 }
