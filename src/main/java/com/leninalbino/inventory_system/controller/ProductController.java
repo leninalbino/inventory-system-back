@@ -58,8 +58,21 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ProductDto productDto) {
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody @Valid ProductCreateRequestDto requestDto) {
         try {
+            // Conversión segura de String a Double
+            Double price;
+            try {
+                price = Double.parseDouble(requestDto.getPrice());
+            } catch (NumberFormatException e) {
+                return ResponseEntity.badRequest().body(new ApiResponse<>(false, "El precio debe ser un número válido.", null));
+            }
+            ProductDto productDto = new ProductDto();
+            productDto.setProductName(requestDto.getProductName());
+            productDto.setDescription(requestDto.getDescription());
+            productDto.setPrice(price);
+            productDto.setQuantity(requestDto.getQuantity());
+            productDto.setCategoryId(requestDto.getCategoryId());
             ProductDto updated = productService.updateProduct(id, productDto);
             return ResponseEntity.ok(new ApiResponse<>(true, "Producto actualizado exitosamente", updated));
         } catch (RuntimeException e) {
