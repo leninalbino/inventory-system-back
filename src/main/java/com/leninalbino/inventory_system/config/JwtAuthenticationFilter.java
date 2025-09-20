@@ -26,9 +26,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private String secretKey;
 
     @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+        String path = request.getRequestURI();
+        return path.startsWith("/auth/") || 
+               path.startsWith("/actuator/") ||
+               path.equals("/");
+    }
+
+    @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         String header = request.getHeader("Authorization");
+        
         if (header != null && header.startsWith("Bearer ")) {
             String token = header.replace("Bearer ", "");
             try {
@@ -53,11 +62,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                         new UsernamePasswordAuthenticationToken(username, null, authorities);
                 SecurityContextHolder.getContext().setAuthentication(auth);
             } catch (Exception e) {
-                /// Si el token es inválido, responde con 401 y no continúa
-                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed");
+                SecurityContextHolder.clearContext();
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
                 return;
             }
         }
+        
         filterChain.doFilter(request, response);
     }
 }
