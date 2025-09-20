@@ -10,5 +10,6 @@ import java.util.List;
 @Repository
 public interface AuthRepository extends JpaRepository<User, Long> {
     User findByDocumentAndPassword(String document, String password);
+    User findByDocument(String document);
     List<User> findByRolesContaining(String role);
 }
