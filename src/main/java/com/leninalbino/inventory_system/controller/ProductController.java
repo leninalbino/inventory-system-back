@@ -4,6 +4,13 @@ import com.leninalbino.inventory_system.model.dto.ApiResponse;
 import com.leninalbino.inventory_system.model.dto.ProductCreateRequestDto;
 import com.leninalbino.inventory_system.model.dto.ProductDto;
 import com.leninalbino.inventory_system.service.ProductService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +19,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/products")
+@Tag(name = "Products", description = "API para gestión de productos en el inventario")
+@SecurityRequirement(name = "bearerAuth")
 public class ProductController {
 
     private final ProductService productService;
@@ -21,12 +30,25 @@ public class ProductController {
     }
 
     @GetMapping
+    @Operation(summary = "Obtener todos los productos", description = "Devuelve una lista con todos los productos del inventario")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Lista de productos obtenida exitosamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class)))
+    })
     public List<ProductDto> getAll() {
         return productService.getAllProducts();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ProductDto> getById(@PathVariable Long id) {
+    @Operation(summary = "Obtener producto por ID", description = "Devuelve un producto específico según su ID")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Producto encontrado",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProductDto.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "404", description = "Producto no encontrado")
+    })
+    public ResponseEntity<ProductDto> getById(
+            @Parameter(description = "ID del producto a buscar", required = true) 
+            @PathVariable Long id) {
         try {
             return ResponseEntity.ok(productService.getProduct(id));
         } catch (RuntimeException e) {
@@ -35,7 +57,15 @@ public class ProductController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<ProductDto>> create(@RequestBody @Valid ProductCreateRequestDto requestDto) {
+    @Operation(summary = "Crear nuevo producto", description = "Crea un nuevo producto en el inventario")
+    @ApiResponses(value = {
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "200", description = "Producto creado exitosamente",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ApiResponse.class))),
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "400", description = "Datos inválidos")
+    })
+    public ResponseEntity<ApiResponse<ProductDto>> create(
+            @Parameter(description = "Datos del producto a crear", required = true)
+            @RequestBody @Valid ProductCreateRequestDto requestDto) {
         try {
             // Conversión segura de String a Double
             Double price;
